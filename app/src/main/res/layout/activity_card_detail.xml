@@ -45,7 +45,7 @@
                     android:background="@color/cardview_light_background"
                     android:backgroundTint="#33000000"
                     android:layout_alignBottom="@id/backdrop"
-                    android:layout_marginBottom="20dp">
+                    android:layout_marginBottom="25dp">
                     <com.example.roposonitish.RoundedImageView
                         android:id="@+id/roundImage"
                         android:layout_width="50dp"

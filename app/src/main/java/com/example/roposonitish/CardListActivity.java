@@ -2,22 +2,18 @@ package com.example.roposonitish;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
@@ -29,46 +25,33 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-/**
- * An activity representing a list of Cards. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link CardDetailActivity} representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
- */
+
 public class CardListActivity extends AppCompatActivity {
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
+    private static final String SELECTED_POSITION = "scroll_position";
     private boolean mTwoPane;
     static final int USER_COUNT = 2;
-    private int mPosition;
+    private static int mPosition;
 //    SharedPreferences preferences;
     SimpleItemRecyclerViewAdapter mAdapter;
-
+    RecyclerView mRecyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState!=null){
+            mPosition = savedInstanceState.getInt(SELECTED_POSITION);
+        }
         setContentView(R.layout.activity_card_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        View recyclerView = findViewById(R.id.card_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        mRecyclerView = (RecyclerView) findViewById(R.id.card_list);
+        setupRecyclerView(mRecyclerView);
 
         if (findViewById(R.id.card_detail_container) != null) {
             // The detail container view will be present only in the
@@ -88,9 +71,12 @@ public class CardListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        parseJson();
+        if(((RoposoApplication)getApplication()).userList.isEmpty()) {
+            parseJson();
+        }
         mAdapter = new SimpleItemRecyclerViewAdapter(this,((RoposoApplication)getApplication()).storyList);
         recyclerView.setAdapter(mAdapter);
+        recyclerView.scrollToPosition(mPosition);
     }
 
     public class SimpleItemRecyclerViewAdapter
@@ -113,8 +99,6 @@ public class CardListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, final int position) {
-//            holder.mItem = mValues.get(position);
-//            holder.mIdView.setText(Integer.toString(mValues.get(position).getLikes_count()));
             final Story story = mValues.get(position);
             holder.placeName.setText(story.getTitle());
 //            holder.placeImage.setImageResource(R.drawable.roposo);
@@ -163,8 +147,8 @@ public class CardListActivity extends AppCompatActivity {
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    mPosition = position;
                     if (mTwoPane) {
-                        mPosition = position;
                         Bundle arguments = new Bundle();
                         arguments.putInt(CardDetailFragment.ARG_ITEM_ID, position);
                         CardDetailFragment fragment = new CardDetailFragment();
@@ -173,7 +157,6 @@ public class CardListActivity extends AppCompatActivity {
                                 .replace(R.id.card_detail_container, fragment)
                                 .commit();
                     } else {
-                        mPosition = position;
                         Intent intent = new Intent(mContext, CardDetailActivity.class);
                         intent.putExtra(CardDetailFragment.ARG_ITEM_ID, position);
 
@@ -190,9 +173,7 @@ public class CardListActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
-//            public final TextView mIdView;
             public final TextView placeName;
-//            public final LinearLayout placeHolder;
             public final LinearLayout placeNameHolder;
             public final ImageView placeImage;
             public Story mItem;
@@ -204,16 +185,12 @@ public class CardListActivity extends AppCompatActivity {
                 super(view);
                 mView = view;
 
-//                placeHolder = (LinearLayout) view.findViewById(R.id.mainHolder);
                 placeName = (TextView) view.findViewById(R.id.placeName);
                 placeNameHolder = (LinearLayout) view.findViewById(R.id.placeNameHolder);
                 placeImage = (ImageView) view.findViewById(R.id.placeImage);
                 roundImage = (RoundedImageView) view.findViewById(R.id.roundImage);
                 userTitle = (TextView) view.findViewById(R.id.userTitle);
                 followImage = (ImageView) view.findViewById(R.id.followImage);
-
-//                mIdView = (TextView) view.findViewById(R.id.id);
-//                mContentView = (TextView) view.findViewById(R.id.content);
             }
 
             @Override
@@ -224,9 +201,18 @@ public class CardListActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onRestart() {
-        super.onRestart();
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(SELECTED_POSITION, mPosition);
+        super.onSaveInstanceState(outState);
+    }
 
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can restore the view hierarchy
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Restore state members from saved instance
+        mPosition = savedInstanceState.getInt(SELECTED_POSITION);
+        mRecyclerView.scrollToPosition(mPosition);
     }
 
     public void parseJson(){ //JSONObject jsonObject
@@ -403,6 +389,8 @@ public class CardListActivity extends AppCompatActivity {
                     "\n";
             JSONArray  jsonRootArray = new JSONArray(strJson);
 
+//            ((RoposoApplication)getApplication()).storyList.clear();
+//            ((RoposoApplication)getApplication()).userList.clear();
 
             //Iterate the jsonArray and print the info of JSONObjects
             for(int i=0; i < jsonRootArray.length(); i++) {
@@ -415,6 +403,8 @@ public class CardListActivity extends AppCompatActivity {
             }
         } catch (JSONException e) {e.printStackTrace();}
     }
+
+
 
     private void parseStory(JSONObject jsonObject) throws JSONException {
         Story story = new Story();
