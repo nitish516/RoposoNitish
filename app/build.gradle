@@ -29,4 +29,5 @@ dependencies {
     compile 'com.android.support:palette-v7:23.0.0'
     compile 'com.android.support:design:23.1.1'
     compile group:'com.squareup.picasso', name:'picasso', version:'2.5.2'
+    compile 'com.github.siyamed:android-shape-imageview:0.9.+@aar'
 }

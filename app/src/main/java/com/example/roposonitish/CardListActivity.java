@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
@@ -51,8 +53,9 @@ public class CardListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
     static final int USER_COUNT = 2;
-    Set<String> followSet = new HashSet<String>();
-    SharedPreferences preferences;
+    private int mPosition;
+//    SharedPreferences preferences;
+    SimpleItemRecyclerViewAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,19 +77,20 @@ public class CardListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
-        preferences = getSharedPreferences("text", 0);
-        String value = preferences.getString(
-                getString(R.string.preference_key), null);
-        if (value == null) {
-            // the key does not exist
-        } else {
-            followSet = (Set<String>) Arrays.asList(value);
-        }
+//        preferences = getSharedPreferences("text", 0);
+//        String value = preferences.getString(
+//                getString(R.string.preference_key), null);
+//        if (value == null) {
+//            // the key does not exist
+//        } else {
+//            ((RoposoApplication)getApplication()).followSet = (Set<String>) Arrays.asList(value);
+//        }
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         parseJson();
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this,((RoposoApplication)getApplication()).storyList));
+        mAdapter = new SimpleItemRecyclerViewAdapter(this,((RoposoApplication)getApplication()).storyList);
+        recyclerView.setAdapter(mAdapter);
     }
 
     public class SimpleItemRecyclerViewAdapter
@@ -108,38 +112,56 @@ public class CardListActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
 //            holder.mItem = mValues.get(position);
 //            holder.mIdView.setText(Integer.toString(mValues.get(position).getLikes_count()));
-            Story story = mValues.get(position);
+            final Story story = mValues.get(position);
             holder.placeName.setText(story.getTitle());
 //            holder.placeImage.setImageResource(R.drawable.roposo);
             Picasso.with(mContext).load(story.getSi()).into(holder.placeImage);
             String db = story.getDb();
-            User user  = ((RoposoApplication)getApplication()).userList.get(db);
+            final User user  = ((RoposoApplication)getApplication()).userList.get(db);
             if(user != null){
+//                Picasso.with(mContext)
+//                        .load (user.getImage())
+//                        .transform(new PaletteGeneratorTransformation(1))
+//                        .into (holder.roundImage, new PaletteGeneratorTransformation.Callback (holder.roundImage) {
+//                            @Override public void onPalette (final Palette palette) {
+//                                holder.uholder.roundImageserTitle.setTextColor(palette.getVibrantColor(1));
+//                            }
+//                        });
                 Picasso.with(mContext).load(user.getImage()).into(holder.roundImage);
                 holder.userTitle.setText(user.getUsername());
-
             }
+
+            Set<String> set = ((RoposoApplication)getApplication()).followSet;
+            if (set.contains(user.getId())) {
+                holder.followImage.setImageResource(R.drawable.following);
+            }
+            else{
+                holder.followImage.setImageResource(R.drawable.follow);
+            }
+
+
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
+                        mPosition = position;
                         Bundle arguments = new Bundle();
-                        arguments.putString(CardDetailFragment.ARG_ITEM_ID, String.valueOf(holder.mItem.getLikes_count()));
+                        arguments.putString(CardDetailFragment.ARG_ITEM_ID, String.valueOf(story.getId()));
                         CardDetailFragment fragment = new CardDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.card_detail_container, fragment)
                                 .commit();
                     } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, CardDetailActivity.class);
-                        intent.putExtra(CardDetailFragment.ARG_ITEM_ID, holder.mItem.getLikes_count());
+                        mPosition = position;
+                        Intent intent = new Intent(mContext, CardDetailActivity.class);
+                        intent.putExtra(CardDetailFragment.ARG_ITEM_ID, story.getId());
 
-                        context.startActivity(intent);
+                        mContext.startActivity(intent);
                     }
                 }
             });
@@ -158,8 +180,9 @@ public class CardListActivity extends AppCompatActivity {
             public final LinearLayout placeNameHolder;
             public final ImageView placeImage;
             public Story mItem;
-            public RoundedImageView roundImage;
-            public TextView userTitle;
+            public final RoundedImageView roundImage;
+            public final TextView userTitle;
+            public final ImageView followImage;
 
             public ViewHolder(View view) {
                 super(view);
@@ -171,6 +194,7 @@ public class CardListActivity extends AppCompatActivity {
                 placeImage = (ImageView) view.findViewById(R.id.placeImage);
                 roundImage = (RoundedImageView) view.findViewById(R.id.roundImage);
                 userTitle = (TextView) view.findViewById(R.id.userTitle);
+                followImage = (ImageView) view.findViewById(R.id.followImage);
 
 //                mIdView = (TextView) view.findViewById(R.id.id);
 //                mContentView = (TextView) view.findViewById(R.id.content);
@@ -181,6 +205,12 @@ public class CardListActivity extends AppCompatActivity {
                 return super.toString() + " '" + placeName.getText() + "'";
             }
         }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
     }
 
     public void parseJson(){ //JSONObject jsonObject
