@@ -147,7 +147,7 @@ public class CardListActivity extends AppCompatActivity {
             public final View mView;
 //            public final TextView mIdView;
             public final TextView placeName;
-            public final LinearLayout placeHolder;
+//            public final LinearLayout placeHolder;
             public final LinearLayout placeNameHolder;
             public final ImageView placeImage;
             public Story mItem;
@@ -156,7 +156,7 @@ public class CardListActivity extends AppCompatActivity {
                 super(view);
                 mView = view;
 
-                placeHolder = (LinearLayout) view.findViewById(R.id.mainHolder);
+//                placeHolder = (LinearLayout) view.findViewById(R.id.mainHolder);
                 placeName = (TextView) view.findViewById(R.id.placeName);
                 placeNameHolder = (LinearLayout) view.findViewById(R.id.placeNameHolder);
                 placeImage = (ImageView) view.findViewById(R.id.placeImage);

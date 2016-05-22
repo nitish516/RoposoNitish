@@ -8,12 +8,55 @@
         android:layout_marginTop="8dp"
         card_view:cardCornerRadius="2dp"
         card_view:cardElevation="4dp">
-
-        <ImageView
-            android:id="@+id/placeImage"
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <com.example.roposonitish.RoundedImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/roposo"/>
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop" />
+            android:layout_height="wrap_content"
+            android:text="Shilpa"
+            />
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/roposo"
+            android:layout_gravity="center|right"
+            android:layout_alignParentRight="true" />
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/placeImage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop" />
+    <LinearLayout
+        android:id="@+id/placeNameHolder"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/placeName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="left"
+            android:paddingLeft="10dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+</LinearLayout>
+
 
         <!-- Used for the ripple effect on touch -->
         <LinearLayout
@@ -23,24 +66,7 @@
             android:background="?android:selectableItemBackground"
             android:orientation="horizontal" />
 
-        <LinearLayout
-            android:id="@+id/placeNameHolder"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/placeName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:gravity="left"
-                android:paddingLeft="10dp"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@android:color/white" />
-
-        </LinearLayout>
 
     </android.support.v7.widget.CardView>
     <!--<TextView-->
