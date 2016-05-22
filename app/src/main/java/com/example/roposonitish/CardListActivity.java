@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.preference.Preference;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -102,7 +104,17 @@ public class CardListActivity extends AppCompatActivity {
             final Story story = mValues.get(position);
             holder.placeName.setText(story.getTitle());
 //            holder.placeImage.setImageResource(R.drawable.roposo);
-            Picasso.with(mContext).load(story.getSi()).into(holder.placeImage);
+            Picasso.with(mContext).load(story.getSi()).into(holder.placeImage, new com.squareup.picasso.Callback() {
+                @Override
+                public void onSuccess() {
+                    holder.progressBar.setVisibility(View.INVISIBLE);
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
             String db = story.getDb();
             final User user  = ((RoposoApplication)getApplication()).userList.get(db);
             if(user != null){
@@ -174,23 +186,22 @@ public class CardListActivity extends AppCompatActivity {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
             public final TextView placeName;
-            public final LinearLayout placeNameHolder;
             public final ImageView placeImage;
-            public Story mItem;
             public final RoundedImageView roundImage;
             public final TextView userTitle;
             public final ImageView followImage;
+            public final ProgressBar progressBar;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
 
                 placeName = (TextView) view.findViewById(R.id.placeName);
-                placeNameHolder = (LinearLayout) view.findViewById(R.id.placeNameHolder);
                 placeImage = (ImageView) view.findViewById(R.id.placeImage);
                 roundImage = (RoundedImageView) view.findViewById(R.id.roundImage);
                 userTitle = (TextView) view.findViewById(R.id.userTitle);
                 followImage = (ImageView) view.findViewById(R.id.followImage);
+                progressBar = (ProgressBar)view.findViewById(R.id.progressBar);
             }
 
             @Override
