@@ -115,6 +115,13 @@ public class CardListActivity extends AppCompatActivity {
             holder.placeName.setText(story.getTitle());
 //            holder.placeImage.setImageResource(R.drawable.roposo);
             Picasso.with(mContext).load(story.getSi()).into(holder.placeImage);
+            String db = story.getDb();
+            User user  = ((RoposoApplication)getApplication()).userList.get(db);
+            if(user != null){
+                Picasso.with(mContext).load(user.getImage()).into(holder.roundImage);
+                holder.userTitle.setText(user.getUsername());
+
+            }
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -151,6 +158,8 @@ public class CardListActivity extends AppCompatActivity {
             public final LinearLayout placeNameHolder;
             public final ImageView placeImage;
             public Story mItem;
+            public RoundedImageView roundImage;
+            public TextView userTitle;
 
             public ViewHolder(View view) {
                 super(view);
@@ -160,6 +169,8 @@ public class CardListActivity extends AppCompatActivity {
                 placeName = (TextView) view.findViewById(R.id.placeName);
                 placeNameHolder = (LinearLayout) view.findViewById(R.id.placeNameHolder);
                 placeImage = (ImageView) view.findViewById(R.id.placeImage);
+                roundImage = (RoundedImageView) view.findViewById(R.id.roundImage);
+                userTitle = (TextView) view.findViewById(R.id.userTitle);
 
 //                mIdView = (TextView) view.findViewById(R.id.id);
 //                mContentView = (TextView) view.findViewById(R.id.content);

@@ -7,36 +7,47 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         card_view:cardCornerRadius="2dp"
-        card_view:cardElevation="4dp">
+        card_view:cardElevation="4dp"
+        android:background="#FF00FF">
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <com.example.roposonitish.RoundedImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/roposo"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Shilpa"
-            />
-        <ImageButton
+            android:id="@+id/roundImage"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:src="@drawable/roposo"/>
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/roposo"
-            android:layout_gravity="center|right"
-            android:layout_alignParentRight="true" />
-    </LinearLayout>
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"/>
+        <TextView
+            android:id="@+id/userTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Shilpa Shetty"
+            android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/roundImage"
+            android:layout_gravity="center"
+            />
+    </RelativeLayout>
     <ImageView
         android:id="@+id/placeImage"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop" />
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter" />
     <LinearLayout
         android:id="@+id/placeNameHolder"
         android:layout_width="match_parent"
