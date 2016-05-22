@@ -38,7 +38,8 @@ public class CardListActivity extends AppCompatActivity {
     private boolean mTwoPane;
     static final int USER_COUNT = 2;
     private static int mPosition;
-//    SharedPreferences preferences;
+    boolean isOnClick = false;
+
     SimpleItemRecyclerViewAdapter mAdapter;
     RecyclerView mRecyclerView;
     @Override
@@ -63,14 +64,6 @@ public class CardListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
-//        preferences = getSharedPreferences("text", 0);
-//        String value = preferences.getString(
-//                getString(R.string.preference_key), null);
-//        if (value == null) {
-//            // the key does not exist
-//        } else {
-//            ((RoposoApplication)getApplication()).followSet = (Set<String>) Arrays.asList(value);
-//        }
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -104,7 +97,6 @@ public class CardListActivity extends AppCompatActivity {
         public void onBindViewHolder(final ViewHolder holder, final int position) {
             final Story story = mValues.get(position);
             holder.placeName.setText(story.getTitle());
-//            holder.placeImage.setImageResource(R.drawable.roposo);
             Picasso.with(mContext).load(story.getSi()).into(holder.placeImage, new com.squareup.picasso.Callback() {
                 @Override
                 public void onSuccess() {
@@ -119,14 +111,6 @@ public class CardListActivity extends AppCompatActivity {
             String db = story.getDb();
             final User user  = ((RoposoApplication)getApplication()).userList.get(db);
             if(user != null){
-//                Picasso.with(mContext)
-//                        .load (user.getImage())
-//                        .transform(new PaletteGeneratorTransformation(1))
-//                        .into (holder.roundImage, new PaletteGeneratorTransformation.Callback (holder.roundImage) {
-//                            @Override public void onPalette (final Palette palette) {
-//                                holder.uholder.roundImageserTitle.setTextColor(palette.getVibrantColor(1));
-//                            }
-//                        });
                 Picasso.with(mContext).load(user.getImage()).into(holder.roundImage);
                 holder.userTitle.setText(user.getUsername());
             }
@@ -161,6 +145,7 @@ public class CardListActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     mPosition = position;
+                    isOnClick = true;
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
                         arguments.putInt(CardDetailFragment.ARG_ITEM_ID, position);
@@ -214,7 +199,9 @@ public class CardListActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        mPosition = ((LinearLayoutManager)mRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
+        if(!isOnClick)
+            mPosition = ((LinearLayoutManager)mRecyclerView.getLayoutManager()).findLastVisibleItemPosition() - 1;
+
         outState.putInt(SELECTED_POSITION, mPosition);
         super.onSaveInstanceState(outState);
     }
