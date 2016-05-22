@@ -7,6 +7,7 @@ import android.os.PersistableBundle;
 import android.preference.Preference;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
@@ -112,7 +113,7 @@ public class CardListActivity extends AppCompatActivity {
 
                 @Override
                 public void onError() {
-
+                    holder.placeImage.setImageResource(R.drawable.roposo);
                 }
             });
             String db = story.getDb();
@@ -213,6 +214,7 @@ public class CardListActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        mPosition = ((LinearLayoutManager)mRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
         outState.putInt(SELECTED_POSITION, mPosition);
         super.onSaveInstanceState(outState);
     }

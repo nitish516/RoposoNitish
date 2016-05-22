@@ -74,7 +74,6 @@
 
     </LinearLayout>
 
-
     <!-- Used for the ripple effect on touch -->
     <LinearLayout
         android:id="@+id/mainHolder"
