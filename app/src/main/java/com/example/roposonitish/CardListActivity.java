@@ -142,6 +142,22 @@ public class CardListActivity extends AppCompatActivity {
                 holder.followImage.setImageResource(R.drawable.follow);
             }
 
+            holder.followImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Set<String> set = ((RoposoApplication)getApplication()).followSet;
+                    if (set.contains(user.getId())) {
+                        ((RoposoApplication)getApplication()).followSet.remove(user.getId());
+                        holder.followImage.setImageResource(R.drawable.follow);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    else{
+                        ((RoposoApplication)getApplication()).followSet.add(user.getId());
+                        holder.followImage.setImageResource(R.drawable.following);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
 
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -150,7 +166,7 @@ public class CardListActivity extends AppCompatActivity {
                     if (mTwoPane) {
                         mPosition = position;
                         Bundle arguments = new Bundle();
-                        arguments.putString(CardDetailFragment.ARG_ITEM_ID, String.valueOf(story.getId()));
+                        arguments.putInt(CardDetailFragment.ARG_ITEM_ID, position);
                         CardDetailFragment fragment = new CardDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -159,7 +175,7 @@ public class CardListActivity extends AppCompatActivity {
                     } else {
                         mPosition = position;
                         Intent intent = new Intent(mContext, CardDetailActivity.class);
-                        intent.putExtra(CardDetailFragment.ARG_ITEM_ID, story.getId());
+                        intent.putExtra(CardDetailFragment.ARG_ITEM_ID, position);
 
                         mContext.startActivity(intent);
                     }

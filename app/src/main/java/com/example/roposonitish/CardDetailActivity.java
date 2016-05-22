@@ -2,7 +2,6 @@ package com.example.roposonitish;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -10,6 +9,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.example.roposonitish.data.Story;
+import com.example.roposonitish.data.User;
+import com.squareup.picasso.Picasso;
+
+import java.util.Set;
+
+import static com.example.roposonitish.CardDetailFragment.*;
 
 /**
  * An activity representing a single Card detail screen. This
@@ -19,19 +28,44 @@ import android.view.MenuItem;
  */
 public class CardDetailActivity extends AppCompatActivity {
 
+    int mPos = 0;
+    Story mStory;
+    User mUser;
+    ImageView mFollowImage;
+    Set<String> mSet;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mPos = getIntent().getIntExtra(ARG_ITEM_ID, 0);
+        mStory = ((RoposoApplication)getApplication()).storyList.get(mPos);
+        mUser = ((RoposoApplication)getApplication()).userList.get(mStory.getDb());
+
         setContentView(R.layout.activity_card_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        ImageView backdrop = (ImageView) findViewById(R.id.backdrop);
+        Picasso.with(this).load(mStory.getSi()).into(backdrop);
+        Picasso.with(this).load(mUser.getImage()).into((ImageView) findViewById(R.id.roundImage));
+        ((TextView)findViewById(R.id.userTitle)).setText(mUser.getUsername());
+        mSet = ((RoposoApplication) getApplication()).followSet;
+        mFollowImage = (ImageView)findViewById(R.id.followImage);
+        if (mSet.contains(mUser.getId())) {
+            mFollowImage.setImageResource(R.drawable.following);
+        }
+        mFollowImage.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View v) {
+                Set<String> set = ((RoposoApplication)getApplication()).followSet;
+                if (set.contains(mUser.getId())) {
+                    ((RoposoApplication) getApplication()).followSet.remove(mUser.getId());
+                    mFollowImage.setImageResource(R.drawable.follow_w);
+                } else {
+                    ((RoposoApplication) getApplication()).followSet.add(mUser.getId());
+                    mFollowImage.setImageResource(R.drawable.following);
+                }
             }
         });
 
@@ -54,8 +88,7 @@ public class CardDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(CardDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(CardDetailFragment.ARG_ITEM_ID));
+            arguments.putInt(ARG_ITEM_ID,mPos);
             CardDetailFragment fragment = new CardDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

@@ -7,7 +7,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.example.roposonitish.data.Story;
 
 
 /**
@@ -44,7 +47,7 @@ public class CardDetailFragment extends Fragment {
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(getArguments().getString(ARG_ITEM_ID));
+//                appBarLayout.setTitle(getArguments().getString(ARG_ITEM_ID));
             }
         }
     }
@@ -54,10 +57,13 @@ public class CardDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.card_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
-//        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.card_detail)).setText(getArguments().getString(ARG_ITEM_ID));
-//        }
+        LinearLayout layout = (LinearLayout)rootView.findViewById(R.id.card_detail);
+        int position = getArguments().getInt(ARG_ITEM_ID);
+        Story story = ((RoposoApplication)getActivity().getApplication()).storyList.get(position);
+
+        ((TextView) layout.findViewById(R.id.card_detail_title)).setText(story.getTitle());
+        ((TextView) layout.findViewById(R.id.card_detail_description)).setText(story.getDescription());
+
 
         return rootView;
     }
